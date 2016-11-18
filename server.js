@@ -5,10 +5,11 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
 let Storage = { 
-  add: function (name) {
-    let item = {name: name, id: this.setId};
+  add: function (name, id) {
+    const idCool = id || this.setId
+    let item = {name: name, id: idCool};
     this.items.push(item);
-    this.setId += 1;
+    this.setId = (idCool + 1) || (setId + 1);
     return item;
   },
 };
@@ -52,6 +53,7 @@ app.post('/items', jsonParser, (request, response) => {
     return response.sendStatus(400);
   }
   const item = storage.add(request.body.name);
+  console.log(storage);
   response.status(201).json(item);
 });
 
@@ -69,19 +71,29 @@ app.put('/items/:id', jsonParser, (request, response) => {
   const id = parseInt(request.params.id);
   const messageBody = request.body;
   isMessageBodyMalformed(messageBody);
-  doesIdParamsMatchIdBody(id, messageBody.id);
+  if ( ! doesIdParamsMatchIdBody(id, messageBody.id)) {
+      return response.status(404).json(
+        { message: "ID in Params does not match ID in Message" });
+  }
   if (idExists(id)) {
-    const record = storage.items[id-1]
+    const IndexVal = storage.items.findIndex((valObj) => {
+    if (valObj.id === id) {
+      return true;
+    }
+  });
+    const record = storage.items[IndexVal];
     record.name = messageBody.name;
     // console.log(storage);
     return response.status(200).json(record);
   } else {
+    /*
     // ??? What is a functional way to do this ???
     while (storage.items.length < id-1) {
       storage.add("");
-    }
-    const item = storage.add(request.body.name);
-    // console.log(storage);
+  }
+    */
+    const item = storage.add(request.body.name, id);
+     console.log(storage);
     return response.status(200).json(item);
   }
 
@@ -104,8 +116,7 @@ app.put('/items/:id', jsonParser, (request, response) => {
     if (int1 === int2) {
       return true;
     } else {
-      return response.status(404).json(
-        { message: "ID in Params does not match ID in Message" });
+      return false;
     }
   }
 
