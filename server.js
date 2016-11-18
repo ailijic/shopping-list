@@ -138,3 +138,6 @@ function idExists (id) {
     return true;
   }
 }
+
+exports.app = app;
+exports.storage = storage;
