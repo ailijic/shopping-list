@@ -2,44 +2,15 @@ start();
 function start() {
   "use strict";
 
-  // const express = require('express');
-  // const bodyParser = require('body-parser');
-  // const jsonParser = bodyParser.json();
-
   // Import Thinkful Code
   const mod = require('./rest_module.js');
   const storage = mod.storage;
   const app = mod.app;
-  console.log(mod.storage);
 
-    /*
-    * ****************************************************
-  let Storage = { 
-    add: function (name, id) {
-      const idCool = id || this.setId
-      let item = {name: name, id: idCool};
-      this.items.push(item);
-      this.setId = (idCool + 1) || (setId + 1);
-      return item;
-    },
-  };
-
-  // TODO Recreate object to use dic instead of array
-  let createStorage = function () {
-    let storage = Object.create(Storage);
-    storage.items = [];
-    storage.setId = 1;
-    return storage;
-  };
-
-  let storage = createStorage();
-
-  storage.add('Broad beans');
-  storage.add('Tomatoes');
-  storage.add('Peppers');
-  ///////////////////////////////////////////////////
-      console.log(storage);
-  //////////////////////////////////////////////////
+  // Import Helper Modules
+  // const express = require('express');
+  const bodyParser = require('body-parser');
+  const jsonParser = bodyParser.json();
 
   storage.removeId = function (id) {
     let deleteMe = this.items.findIndex((valObj, index, array) => {
@@ -50,8 +21,8 @@ function start() {
     this.items.splice(deleteMe, 1);
   };
 
-  const app = express();
-  app.use(express.static('public'));
+  // const app = express();
+  // app.use(express.static('public'));
 
   // CRUD Handlers
   app.get('/items', (request, response) => {
@@ -76,7 +47,6 @@ function start() {
       return response.status(404).json({ message: "Id not found" });
     }
   });
-  // !!! Not good use of memory !!!
   app.put('/items/:id', jsonParser, (request, response) => {
     const id = parseInt(request.params.id);
     const messageBody = request.body;
@@ -126,7 +96,7 @@ function start() {
     return response.sendStatus(400).json({ message: "Something went wrong:" });
   });
 
-  app.listen(process.env.PORT || 8080, process.env.IP);
+  // app.listen(process.env.PORT || 8080, process.env.IP);
 
   function idExists (id) {
     const IndexVal = storage.items.findIndex((valObj) => {
@@ -142,8 +112,7 @@ function start() {
     }
   }
 
-  */
-
+  // Create Exports for Testing
   exports.app = app;
   exports.storage = storage;
 }
