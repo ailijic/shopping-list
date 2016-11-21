@@ -34,10 +34,12 @@ function start() {
   var app = express();
   app.use(express.static('public'));
 
+  // GET
   app.get('/items', function(request, response) {
       response.json(storage.items);
   });
 
+  // POST
   app.post('/items', jsonParser, function(request, response) {
     if (!('name' in request.body)) {
       return response.sendStatus(400);
@@ -46,5 +48,10 @@ function start() {
     response.status(201).json(item);
   });
 
+  // Spawn server and port
   app.listen(process.env.PORT || 8080, process.env.IP);
+
+  // Module Exports
+  exports.storage = storage;
+  exports.app = app;
 }
