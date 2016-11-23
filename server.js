@@ -62,6 +62,7 @@ function start() {
   //   - Params ID must match the ID in the body object (===)
   app.put('/items/:id', jsonParser, (request, response) => {
     // sanitize the input and return clean object
+        let Sanitize = () => {return {};};
     const messageObj = Sanitize()
     const id = parseInt(request.params.id);
     const messageBody = request.body;
@@ -81,7 +82,7 @@ function start() {
       return response.status(200).json(record);
     } else {
       const item = storage.add(request.body.name, id);
-      console.log(storage);
+      // console.log(storage);
       return response.status(200).json(item);
     }
 

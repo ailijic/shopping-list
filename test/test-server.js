@@ -59,10 +59,34 @@ function start() {
             done();
         });
     });
+    it('should delete an item on DELETE', (done) => {
+      const id = 2;
+      const length = 3;
+      chai.request(app)
+        .delete('/items/' + id)
+        .end((err, res) => {
+            should.equal(err, null);
+            res.should.have.status(200);
+            res.should.not.be.json;
+            res.body.should.be.a('object');
+            res.body.should.deep.equal({});
+            storage.items.should.be.a('array');
+            storage.items.should.have.length(length);
+            storage.items[id].should.be.a('object');
+            storage.items[id].should.have.property('id');
+            storage.items[id].should.have.property('name');
+            storage.items[id].id.should.be.a('number');
+            storage.items[id].name.should.be.a('string');
+            storage.items[id].name.should.equal('Kale');
+            done();
+        });
+    });
     it('should edit an item on put', (done) => {
+      const id = 2;
+      const length = 4;
       chai.request(app)
         .put('/items/' + id)
-        .send({'name': 'Kale', 'id': id})
+        .send({'name': 'Durian', 'id': id})
         .end((err, res) => {
             should.equal(err, null);
             res.should.have.status(200);
@@ -72,28 +96,27 @@ function start() {
             res.body.should.have.property('id');
             res.body.name.should.be.a('string');
             res.body.id.should.be.a('number');
-            res.body.name.should.equal('Kale');
+            res.body.name.should.equal('Durian');
             storage.items.should.be.a('array');
-            storage.items.should.have.length(4);
-            storage.items[3].should.be.a('object');
-            storage.items[3].should.have.property('id');
-            storage.items[3].should.have.property('name');
-            storage.items[3].id.should.be.a('number');
-            storage.items[3].name.should.be.a('string');
-            storage.items[3].name.should.equal('Kale');
+            storage.items.should.have.length(length);
+            storage.items[id].should.be.a('object');
+            storage.items[id].should.have.property('id');
+            storage.items[id].should.have.property('name');
+            storage.items[id].id.should.be.a('number');
+            storage.items[id].name.should.be.a('string');
+            storage.items[id].name.should.equal('Durian');
             done();
         });
     });
-    it('should delete an item on delete');
-    it('should POST to an ID that exists');
-    it('should POST without body data');
-    it('should POST with something other than valid JSON');
-    it('should PUT without an ID in the endpoint');
-    it('should PUT with different ID in the endpoint than the body');
-    it("should PUT to an ID that doesn't exist");
-    it('should PUT without body data');
-    it('should PUT with something other than valid JSON');
-    it("should DELETE an ID that doesn't exist");
-    it('should DELETE without an ID in the endpoint');
+    it('should not POST to an ID that exists');
+    it('should not POST without body data');
+    it('should not POST with something other than valid JSON');
+    it('should not PUT without an ID in the endpoint');
+    it('should not PUT with different ID in the endpoint than the body');
+    it("should not PUT to an ID that doesn't exist");
+    it('should not PUT without body data');
+    it('should not PUT with something other than valid JSON');
+    it("should not DELETE an ID that doesn't exist");
+    it('should not DELETE without an ID in the endpoint');
   });
 }
