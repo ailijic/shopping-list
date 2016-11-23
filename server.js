@@ -12,6 +12,7 @@ function start() {
   const bodyParser = require('body-parser');
   const jsonParser = bodyParser.json();
 
+  // Extend the Storage object to remove items
   storage.removeId = function (id) {
     let deleteMe = this.items.findIndex((valObj, index, array) => {
       if (valObj.id == id) {
@@ -21,23 +22,11 @@ function start() {
     this.items.splice(deleteMe, 1);
   };
 
-  // const app = express();
-  // app.use(express.static('public'));
-
   // CRUD Handlers
-  app.get('/items', (request, response) => {
-    response.json(storage.items);
-  });
+  // // GET defined in rest_module.js
+  // // POST defined in rest_module.js
 
-  app.post('/items', jsonParser, (request, response) => {
-    if ( !('name' in request.body)) {
-      return response.sendStatus(400);
-    }
-    const item = storage.add(request.body.name);
-    console.log(storage);
-    response.status(201).json(item);
-  });
-
+  // DELETE
   app.delete('/items/:id', jsonParser, (request, response) => {
     const id = parseInt(request.params.id);
     if (idExists(id)) {
@@ -47,7 +36,33 @@ function start() {
       return response.status(404).json({ message: "Id not found" });
     }
   });
+
+  function idExists(id) {
+    const IndexVal = storage.items.findIndex((valObj) => {
+      if (valObj.id === id) {
+        return true;
+      }
+    });
+    const arrayIndexNotFound = -1;
+    if (IndexVal === arrayIndexNotFound) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  // PUT
+  // * If id is edited the server will respond with 200 OK
+  //   and return the modified item via JSON
+  // * Sanitize the user input and 
+  //   give descriptive errors for the following:
+  //   - Params :id must be an integer
+  //   - The request.body must have an ['id'] and ['name'] property.
+  //   - Strip out everything in the request except for .id and .name 
+  //   - Params ID must match the ID in the body object (===)
   app.put('/items/:id', jsonParser, (request, response) => {
+    // sanitize the input and return clean object
+    const messageObj = Sanitize()
     const id = parseInt(request.params.id);
     const messageBody = request.body;
     isMessageBodyMalformed(messageBody);
@@ -63,7 +78,6 @@ function start() {
     });
       const record = storage.items[IndexVal];
       record.name = messageBody.name;
-      // console.log(storage);
       return response.status(200).json(record);
     } else {
       const item = storage.add(request.body.name, id);
@@ -95,22 +109,6 @@ function start() {
 
     return response.sendStatus(400).json({ message: "Something went wrong:" });
   });
-
-  // app.listen(process.env.PORT || 8080, process.env.IP);
-
-  function idExists (id) {
-    const IndexVal = storage.items.findIndex((valObj) => {
-      if (valObj.id === id) {
-        return true;
-      }
-    });
-    const arrayIndexNotFound = -1;
-    if (IndexVal === arrayIndexNotFound) {
-      return false;
-    } else {
-      return true;
-    }
-  }
 
   // Create Exports for Testing
   exports.app = app;

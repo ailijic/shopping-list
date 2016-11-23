@@ -13,10 +13,12 @@ function start() {
   chai.use(chaiHttp);
 
   describe('Shopping List', function() {
+    let id = null;
     it('should list items on GET', (done) => {
       chai.request(app)
         .get('/items')
         .end((err, res) => {
+          id = res.body[0].id;
           res.should.have.status(200);
           res.should.be.json;
           res.body.should.be.a('array');
@@ -57,7 +59,31 @@ function start() {
             done();
         });
     });
-    it('should edit an item on put');
+    it('should edit an item on put', (done) => {
+      chai.request(app)
+        .put('/items/' + id)
+        .send({'name': 'Kale', 'id': id})
+        .end((err, res) => {
+            should.equal(err, null);
+            res.should.have.status(200);
+            res.should.be.json;
+            res.body.should.be.a('object');
+            res.body.should.have.property('name');
+            res.body.should.have.property('id');
+            res.body.name.should.be.a('string');
+            res.body.id.should.be.a('number');
+            res.body.name.should.equal('Kale');
+            storage.items.should.be.a('array');
+            storage.items.should.have.length(4);
+            storage.items[3].should.be.a('object');
+            storage.items[3].should.have.property('id');
+            storage.items[3].should.have.property('name');
+            storage.items[3].id.should.be.a('number');
+            storage.items[3].name.should.be.a('string');
+            storage.items[3].name.should.equal('Kale');
+            done();
+        });
+    });
     it('should delete an item on delete');
     it('should POST to an ID that exists');
     it('should POST without body data');
