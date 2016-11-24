@@ -104,15 +104,61 @@ function start() {
             storage.items[id].should.have.property('name');
             storage.items[id].id.should.be.a('number');
             storage.items[id].name.should.be.a('string');
-            storage.items[id].name.should.equal('Durian');
+            storage.items[id+1].name.should.equal('Durian');
             done();
         });
     });
-    it('should not POST to an ID that exists');
-    it('should not POST without body data');
-    it('should not POST with something other than valid JSON');
-    it('should not PUT without an ID in the endpoint');
-    it('should not PUT with different ID in the endpoint than the body');
+    it('should POST to an ID that exists', (done) => {
+      chai.request(app)
+      .post('/items/')
+      .send({'name': 'Peppers'})
+      .end((err, res) => {
+        should.equal(err, null);
+        res.should.have.status(201);
+        done();
+      });
+    });
+    it('should not POST without body data', (done) => {
+      chai.request(app)
+      .post('/items/')
+      .send({})
+      .end((err, res) => {
+        should.not.equal(err, null);
+        res.should.have.status(400);
+        done();
+      });
+    });
+    it('should not POST with something other than valid JSON', (done) => {
+      chai.request(app)
+      .post('/items/')
+      .send({'tom': '55'})
+      .end((err, res) => {
+        should.not.equal(err, null);
+        res.should.have.status(400);
+        done();
+      });
+    });
+    it('should not PUT without an ID in the endpoint', (done) => {
+      chai.request(app)
+      .put('/items/')
+      .send({'name': 'Soup', 'id': '5'})
+      .end((err, res) => {
+        should.not.equal(err, null);
+        res.should.have.status(404);
+        done();
+      });
+    });
+    it('should not PUT with different ID in the endpoint than the body', (done) => {
+      let id = 5;
+      chai.request(app)
+      .put('/items/' + (id+1))
+      .send({'name': 'Soup', 'id': id})
+      .end((err, res) => {
+        should.equal(err, null);
+        res.should.have.status(404);
+        done();
+      });
+    });
     it("should not PUT to an ID that doesn't exist");
     it('should not PUT without body data');
     it('should not PUT with something other than valid JSON');

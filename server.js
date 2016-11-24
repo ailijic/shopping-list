@@ -28,7 +28,7 @@ function start() {
       const equalToId = function equalToId(value, index, array) {
         return (value.id === id);
       }
-      return this.items.findIndex(equalToId);
+      return storage.items.findIndex(equalToId);
     }
 
     const indexNotFound = -1;
@@ -92,8 +92,16 @@ function start() {
     putObj = sanitize(request);
 
     putObj = (function setStatus() {
-      putObj.status = 200;
-      put retMsg = putObj.record;
+      switch (false) {
+        case doesIdParamsMatchIdBody(request.params.id, request.body.id):
+          putObj.status = 404;
+          putObj.retMsg = 'Ids do not match';
+          putObj.record = {message: putObj.retMsg};
+          break;
+        default:
+          putObj.status = 200;
+          putObj.retMsg = putObj.record;
+      }
       return putObj;
     }) ();
 
@@ -103,34 +111,44 @@ function start() {
     }
     
     // return response
+    //    console.log(putObj);
     return response.status(putObj.status).json(putObj.retMsg);
+
+    function doesIdParamsMatchIdBody (int1, int2) {
+      if (int1 === int2) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     function sanitize(request) {
       const name = request.body.name;
       const id = request.body.id;
+      let retString = '';
       switch (true) {
         case (name === undefined):
           console.log("ERR: Name undefined");
           putObj.status = 404;
-          const retString = "Message body missing name property";
+          retString = "Message body missing name property";
           putObj.retMsg = {message: retString};
           break;
         case (typeof(name) !== 'string'):
           console.log("ERR: Name is not a string");
           putObj.status = 404;
-          const retString = "Name is not a string";
+          retString = "Name is not a string";
           putObj.retMsg = {message: retString};
           break;
         case (id === undefined):
           console.log("ERR: ID is undefined");
           putObj.status = 404;
-          const retString = "Message body ID is not defined";
+          retString = "Message body ID is not defined";
           putObj.retMsg = {message: retString};
           break;
         case (typeof(id) !== "number"):
           console.log("ERR: ID is not a number");
           putObj.status = 404;
-          const retString = "ID is not a number";
+          retString = "ID is not a number";
           putObj.retMsg = {message: retString};
           break;
         default:
@@ -140,6 +158,8 @@ function start() {
       return putObj;
     }
   });
+
+/*
 
     const id = parseInt(request.params.id);
     const messageBody = request.body;
@@ -187,6 +207,8 @@ function start() {
 
     return response.sendStatus(400).json({ message: "Something went wrong:" });
   });
+
+*/
 
   // Create Exports for Testing
   exports.app = app;
